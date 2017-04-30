@@ -132,3 +132,198 @@ node.js
 *	url.parse()  解析地址
 *	url.format() 合并地址
 *	url.resolve() 合并地址
+
+例子：
+
+```js
+
+url.parse('http://imooc.com/course/list')
+
+{
+	protocol: 'http:',
+	slashes: true,
+	auth: null,
+	host: 'imooc.com',
+	port: null,
+	hostname: 'imooc.com',
+	hash: null,
+	search: null,
+	query: null,
+	pathname: '/course/list',
+	href: 'http://imooc.com/course/list'
+}
+
+url.parse('http://imooc.com:8080/course/list?from=yby&course=node#floor1')
+
+{
+	protocol: 'http:',
+	slashes: true,
+	auth: null,
+	host: 'imooc.com:8080',
+	port: 8080,
+	hostname: 'imooc.com',
+	hash: #floor1,
+	search: ?form=yby&course=node,
+	query: form=yby&course=node,
+	pathname: '/course/list?from=yby&course=node',
+	href: 'http://imooc.com:8080/course/list?from=yby&course=node#floor1'
+}
+
+url.parse('http://imooc.com:8080/course/list?from=yby&course=node#floor1', true)
+
+// parse 的第二个参数来指定解析的参数是用query模块还是queryString模块，默认是false，设置为true，解析出来的参数是对象格式
+
+url.parse('//imooc.com/course/list', true, true)
+
+// parse 的第三个参数处理地址不确定协议的情况，从而正确的解析地址
+
+```
+
+*	protocol---地址使用的协议是什么
+*	slashes---是否有协议的双斜线
+*	auth---[nodejsAPI](https://nodejs.org/api/url.html#url_urlobject_auth)
+*	host---域名
+*	port---端口
+*	hostname---主机名
+*	hash---页面中的锚点
+*	search---查询字符串参数
+*	query---发送给http服务器的数据
+*	pathname---访问资源路径名
+*	path---访问资源路径
+*	href---没别解析的完整连接
+
+```js
+
+url.format({
+	protocol: 'http:',
+	slashes: true,
+	auth: null,
+	host: 'imooc.com:8080',
+	port: 8080,
+	hostname: 'imooc.com',
+	hash: #floor1,
+	search: ?form=yby&course=node,
+	query: form=yby&course=node,
+	pathname: '/course/list?from=yby&course=node',
+	href: 'http://imooc.com:8080/course/list?from=yby&course=node#floor1'
+})
+
+http://imooc.com:8080/course/list?from=yby&course=node#floor1
+
+```
+
+```js
+
+url.resolve('http://imooc.com/', 'course/list')
+
+http://imooc.com/course/list
+
+```
+
+## querystring.stringfy()
+
+```js
+
+querystring.stringify({name:'yby', course:['jade','node'],form:''})
+
+// 'name=yby&course=jade&course=node&form='
+
+querystring.stringify({name:'yby', course:['jade','node'],form:''},',')
+
+// 'name=yby,course=jade,course=node,form='
+
+querystring.stringify({name:'yby', course:['jade','node'],form:''},',',':')
+
+// 'name:yby,course:jade,course:node,form:'
+
+```
+
+参数：
+
+*	第一个参数：要传输的参数对象
+*	第二个参数：告诉函数数据之间的分隔符是什么
+*	第三个参数：告诉函数键值对之间的分隔符是什么
+*	根据指定参数生成字符串
+
+## querystring.parse()
+
+```js
+
+querystring.parse('name=yby&course=jade&course=node&form=')
+
+// { name: 'yby', course: [ 'jade', 'node' ], form: '' }
+
+querystring.parse('name=yby,course=jade,course=node,form=', ',')
+
+// { name: 'yby', course: [ 'jade', 'node' ], form: '' }
+
+ querystring.parse('name:yby,course:jade,course:node,form:', ',', ':')
+
+// { name: 'yby', course: [ 'jade', 'node' ], form: '' }
+
+```
+
+参数：
+
+*	第一个参数：要解析的字符串
+*	第二个参数：告诉函数数据之间的分隔符是什么
+*	第三个参数：告诉函数键值对之间的分隔符是什么
+*	根据指定参数解析出一个数据对象
+
+## querystring.escape() 和 querystring.unescape()  
+
+转义和反转义函数
+
+```js
+
+querystring.escape('哈哈>')
+
+// '%E5%93%88%E5%93%88%3E'
+
+querystring.unescape('%E5%93%88%E5%93%88%3E')
+
+// '哈哈>'
+
+
+```
+
+## http知识
+
+大概流程：
+
+*	http客户端发起请求，创建端口
+*	http服务器在端口监听客户端请求
+*	http服务器向客户端返回状态和内容
+
+
+> 1.	浏览器搜索自身的DNS缓存（大概一分钟）
+> 2.	搜索操作系统自身的DNS缓存（浏览器没有找到缓存或缓存已经失效）
+> 3.	读取本地的HOST文件
+
+> 4.	浏览器发起一个DNS的一个系统调用
+>> 1). 宽带运营商服务器查看本身缓存
+
+>> 2). 运营商服务器发送一个迭代DNS解析请求（运营商服务器把结果返回操作系统内核同时缓存起来，操作系统内核把结果返回浏览器，最终浏览器拿到了想要访问域名对应的IP地址）
+>
+> 5.浏览器获得域名对应的IP地址后，发起HTTP“三次握手”
+>
+> 6.  TCP/IP连接建立起来后，浏览器就可以向服务器发送HTTP请求了使用了比如说，用HTTP的GET方法请求一个根域里的一个域名，协议可以采用HTTP 1.0的一个协议
+> 
+> 7. 服务器接收到这个请求，根据路径参数，经过后端的一些处理之后，把处理后的一个结果的数据返回给浏览器，如果是慕课网的页面就会把完整的HTML页面代码返回给浏览器。
+> 
+> 8. 浏览器拿到了慕课网的完整的HTML页面代码，在解析和渲染这个页面的时候，里面的JS、css、图片静态资源，他们同样也是一个个HTTP请求都需要经过上面的主要的七个步骤。
+> 
+> 9.浏览器根据拿到的资源对页面进行渲染，最终把一个完整的页面呈献给用户
+
+**http头和正文信息：**
+
+`http头` 发送的一些附加的信息：内容类型、服务器发送相应的日期、HTTP状态码
+
+`正文` 就是用户提交的表单数据
+
+
+
+
+
+
+
