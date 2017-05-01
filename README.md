@@ -537,6 +537,9 @@ http.get(url, function(res) {
 ## 事件模块小插曲
 
 
+## request方法
+
+Scott的视频看完了，感觉有些地方还是要再看一遍。讲的很通俗，蛮喜欢他的风格的。
 
 
 
