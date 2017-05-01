@@ -347,12 +347,201 @@ querystring.unescape('%E5%93%88%E5%93%88%3E')
 *	什么是回调？
 *	什么是同步和异步？
 *	什么是I/O？
-*	什么是单线程、多线程
+*	什么是单线程、多线程？
 *	什么是阻塞、非阻塞？
 *	什么是事件？
 *	什么是事件驱动？
 *	什么是基于事件驱动的回调？
 *	什么是事件循环？
+
+## http源码解读
+
+*	什么是作用域？
+
+```js
+
+var globalVariable = 'This is global variable'
+
+function globalFunction() {
+  var localVariable = 'This is local variable'
+
+  console.log('Visit global/local variable')
+  console.log(globalVariable)
+  console.log(localVariable)
+}
+
+globalFunction()
+
+```
+
+*	什么是上下文？
+
+```js
+
+var pet = {
+  words: '...'
+  speak: function() {
+    console.log(this.words)
+    console.log(this === pet)
+  }
+}
+
+pet.speak()
+
+function pet(words) {
+  this.words = words
+
+  console.log(this.words)
+  console.log(this === global)
+}
+
+pet('...')
+
+function Pet(words) {
+  this.words = words
+  this.speak = function() {
+    console.log(this.words)
+    console.log(this)
+  }
+}
+
+var cat = new Pet('Miao')
+
+cat.speak()
+
+```
+
+引入作用域和上下文，是为了引入call和apply连个方法
+
+```js
+
+var pet = {
+  words: '...'
+  speak: function(say) {
+    console.log(say + ' ' + this.words)
+  }
+}
+
+// pet.speak('Speak')
+
+var dog = {
+  words: 'Wang'
+}
+
+pet.speak.call(dog, 'Speak')
+
+function Pet(words) {
+  this.words = words
+  this.speak = function() {
+    console.log(this.words)
+  }
+}
+
+function Dog(words) {
+  Pet.call(this, words)
+  // Pet.apply(this, arguments)
+}
+
+var dog = new Dog('Wang')
+
+dog.speak()
+
+```
+
+## HTTP源码解读
+
+不想读，不想读，不想读，重要的事情说三遍
+
+## HTTP性能测试
+
+使用Apache ab做测试[http://httpd.apache.org/docs/2.0/en/programs/ab.html](http://httpd.apache.org/docs/2.0/en/programs/ab.html)
+
+## HTTP小爬虫
+
+借助HTTP API
+
+```js
+
+var http = require('http')
+var cheerio = require('cheerio')
+var url = 'http://www.imooc.com/learn/348'
+
+function filterChapters(html) {
+  var $ = cheerio.load(html)
+  var chapters = $('.chapter')
+
+  // [{
+  //   chapterTitle: '',
+  //   video: [
+  //     title: '',
+  //     id: ''
+  //   ]
+  // }]
+
+  var courseData = []
+  chapters.each(function(item) {
+    var chapter = $(this)
+    var chapterTitle = chapter.find('strong').text()
+    var videos = chapter.find('.video li')
+    var chapterData = {
+      chapterTitle: chapterTitle,
+      videos: []
+    }
+
+    videos.each(function(item) {
+      var video = $(this).find('.J-media-item')
+      var videoTitle = video.text()
+      var id = video.attr('href').split('/video/')[1]
+
+      chapterData.videos.push({
+        title: videoTitle,
+        id: id
+      })
+    })
+
+    courseData.push(chapterData)
+  })
+
+  return courseData
+}
+
+function printCourseInfo(courseData) {
+  courseData.forEach(function(item) {
+    var chapterTitle = item.chapterTitle
+    console.log(chapterTitle + '\n')
+
+    item.videos.forEach(function(video) {
+      console.log('【' + video.id + '】' + video.title + '\n')
+    })
+  })
+}
+
+http.get(url, function(res) {
+  var html = ''
+
+  res.on('data', function(data) {
+    html += data
+  })
+
+  res.on('end', function() {
+    var courseData = filterChapters(html)
+
+    printCourseInfo(courseData)
+  })
+}).on('error', function() {
+  console.log('获取课程数据出错')
+})
+
+```
+
+## 事件模块小插曲
+
+
+
+
+
+
+
 
 
 
