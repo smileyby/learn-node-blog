@@ -342,16 +342,57 @@ querystring.unescape('%E5%93%88%E5%93%88%3E')
 
 ## HTTP模块
 
+*	支持更多特性
+*	不缓冲请求和相应
+*	处理流相关
+
 ### HTTP概念进阶
 
 *	什么是回调？
+	*	回调是异步编程最基本的方法，将后续逻辑封装在回调函数中作为其实函数的参数，逐层去嵌套。通过这种方式来让程序按照我们想要的方式来执行。
+	*
+```js
+
+function learn(something) {
+	console.log(something)
+}
+
+function we(callback, something) {
+	something += 'is cool'
+	callback(something)
+}
+
+we(learn, 'Nodejs')
+
+we(function(something) {
+	console.log(something)
+}, 'Jade')
+
+```	
+
 *	什么是同步和异步？
+	*	同步：程序按顺序执行	
+	*	异步：程序的执行顺序和程序的排列顺序无关
 *	什么是I/O？
 *	什么是单线程、多线程？
 *	什么是阻塞、非阻塞？
 *	什么是事件？
 *	什么是事件驱动？
 *	什么是基于事件驱动的回调？
+```js
+
+function clickIt(e) {
+	window.alert('Button is clicked')
+}
+
+var button = document.getElementById('button')
+
+button.addEventListener('click', clickIt)
+
+// EventEmitter
+
+```	
+
 *	什么是事件循环？
 
 ## http源码解读
